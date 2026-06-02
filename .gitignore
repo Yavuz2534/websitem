@@ -1,0 +1,6 @@
+# Claude Code yerel ayarları (siteye ait değil)
+.claude/
+
+# İşletim sistemi dosyaları
+Thumbs.db
+.DS_Store

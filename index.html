@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yavuz Selim Aykaç — Portfolyo</title>
+  <meta name="description" content="Yavuz Selim Aykaç'ın kişisel portfolyo sitesi." />
+
+  <!-- İnternet varsa Poppins fontunu kullanır; yoksa sistem fontuna düşer -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== ANİMASYONLU ARKA PLAN ŞEKİLLERİ ===== -->
+  <div class="bg-shapes" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <!-- ===== ÜST MENÜ (NAVBAR) ===== -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="#hero" class="logo">YSA<span>.</span></a>
+
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#hakkimda">Hakkımda</a></li>
+          <li><a href="#projeler">Projelerim</a></li>
+        </ul>
+      </nav>
+
+      <!-- Mobil hamburger menü butonu -->
+      <button class="hamburger" id="hamburger" aria-label="Menüyü aç/kapat">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== HERO (GİRİŞ) ===== -->
+  <section class="hero" id="hero">
+    <div class="container hero-inner">
+      <!-- Profil fotoğrafı yer tutucusu: kendi fotonu assets\ klasörüne koyup
+           aşağıdaki <div> yerine <img src="assets/foto.jpg" ...> kullanabilirsin -->
+      <div class="avatar">YSA</div>
+
+      <h1>Merhaba, ben <span class="gradient-text">Yavuz Selim Aykaç</span> 👋</h1>
+      <p class="subtitle">6. sınıf öğrencisi &amp; bilgisayar meraklısı 💻</p>
+
+      <div class="hero-buttons">
+        <a href="#projeler" class="btn btn-primary">Projelerimi Gör</a>
+        <a href="#hakkimda" class="btn btn-ghost">Beni Tanı</a>
+      </div>
+
+      <a href="#hakkimda" class="scroll-down" aria-label="Aşağı kaydır">↓</a>
+    </div>
+  </section>
+
+  <!-- ===== HAKKIMDA ===== -->
+  <section class="section" id="hakkimda">
+    <div class="container">
+      <h2 class="section-title reveal">Hakkımda</h2>
+
+      <!-- buraya kendi tanıtım metnini yazabilirsin -->
+      <p class="section-text reveal">
+        Merhaba! Ben Yavuz Selim. Bilgisayarlarla iç içe yaşamayı çok seviyorum ve
+        derslerimde başarılıyım. Yeni şeyler öğrenmeyi, kod yazmayı ve teknolojiyle
+        ilgili her şeyi keşfetmeyi seviyorum. İleride bilgisayar dünyasında güzel
+        işler yapmak istiyorum. 🚀
+      </p>
+
+      <div class="info-cards">
+        <!-- buraya kendi bilgilerini yazabilirsin -->
+        <div class="info-card reveal">
+          <span class="info-emoji">🎓</span>
+          <h3>Sınıf</h3>
+          <p>6. sınıf öğrencisi</p>
+        </div>
+        <div class="info-card reveal">
+          <span class="info-emoji">💻</span>
+          <h3>İlgi Alanım</h3>
+          <p>Bilgisayar &amp; kodlama</p>
+        </div>
+        <div class="info-card reveal">
+          <span class="info-emoji">📚</span>
+          <h3>En Sevdiğim Ders</h3>
+          <p>Bilişim Teknolojileri</p>
+        </div>
+        <div class="info-card reveal">
+          <span class="info-emoji">🌟</span>
+          <h3>Hedefim</h3>
+          <p>İyi bir yazılımcı olmak</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJELERİM / HOBİLERİM ===== -->
+  <section class="section section-alt" id="projeler">
+    <div class="container">
+      <h2 class="section-title reveal">Projelerim &amp; Hobilerim</h2>
+      <p class="section-text reveal">Üzerinde çalıştığım ve yapmaktan keyif aldığım şeyler:</p>
+
+      <div class="project-grid">
+        <!-- Her kart bir proje/hobi. Başlık ve açıklamayı kendine göre değiştir -->
+        <article class="project-card reveal">
+          <div class="project-icon">🌐</div>
+          <h3>İlk Web Sitem</h3>
+          <p>HTML ve CSS kullanarak kendi kişisel sitemi tasarladım. (İşte bu site!)</p>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-icon">🎮</div>
+          <h3>Scratch Oyunum</h3>
+          <p>Scratch ile küçük bir oyun yaptım. Karakterler ve puan sistemi ekledim.</p>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-icon">🤖</div>
+          <h3>Lego &amp; Robotik</h3>
+          <p>Lego parçalarıyla robot tasarlayıp hareket ettirmeyi çok seviyorum.</p>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-icon">🛠️</div>
+          <h3>Bilgisayar Toplama</h3>
+          <p>Bilgisayar parçalarını öğreniyor, nasıl çalıştıklarını araştırıyorum.</p>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-icon">🧠</div>
+          <h3>Jarvis'i Gerçek Hayata Taşıdım</h3>
+          <p>Filmlerdeki Jarvis gibi sesle komut alıp cevap verebilen bir yapay zeka
+             asistanı üzerinde çalıştım. Konuşunca beni anlıyor! 🎙️</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-name">Yavuz Selim Aykaç</p>
+      <p class="footer-small">Bilgisayar meraklısı &amp; öğrenci</p>
+      <p class="footer-copy">© 2026 — Tüm hakları saklıdır.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
