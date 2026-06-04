@@ -3,151 +3,181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yavuz Selim Aykaç — Portfolyo</title>
-  <meta name="description" content="Yavuz Selim Aykaç'ın kişisel portfolyo sitesi." />
-
-  <!-- İnternet varsa Poppins fontunu kullanır; yoksa sistem fontuna düşer -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
+  <meta name="theme-color" content="#0f172a" />
+  <title>İş Takip Sistemi</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ===== ANİMASYONLU ARKA PLAN ŞEKİLLERİ ===== -->
-  <div class="bg-shapes" aria-hidden="true">
-    <span></span><span></span><span></span><span></span><span></span>
+  <!-- ======================= GİRİŞ / KAYIT EKRANI ======================= -->
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-logo">İT</div>
+        <h1>İş Takip Sistemi</h1>
+        <p class="brand-sub">Şirketinizin günlük işlerini ve kazancını takip edin</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Giriş Yap</button>
+        <button class="tab" data-tab="register">Hesap Aç</button>
+      </div>
+
+      <!-- Giriş Formu -->
+      <form id="login-form" class="auth-form">
+        <label>Kullanıcı Adı
+          <input type="text" id="login-username" autocomplete="username" required />
+        </label>
+        <label>Şifre
+          <input type="password" id="login-password" autocomplete="current-password" required />
+        </label>
+        <p class="form-error" id="login-error"></p>
+        <button type="submit" class="btn btn-primary btn-block">Giriş Yap</button>
+      </form>
+
+      <!-- Kayıt Formu -->
+      <form id="register-form" class="auth-form hidden">
+        <label>Şirket Adı
+          <input type="text" id="reg-company" placeholder="Örn: Aykaç İnşaat" required />
+        </label>
+        <label>Ad Soyad (Yetkili)
+          <input type="text" id="reg-owner" placeholder="Örn: Yavuz Selim Aykaç" />
+        </label>
+        <label>Kullanıcı Adı
+          <input type="text" id="reg-username" autocomplete="username" required />
+        </label>
+        <label>Şifre
+          <input type="password" id="reg-password" autocomplete="new-password" required minlength="4" />
+        </label>
+        <p class="form-error" id="register-error"></p>
+        <button type="submit" class="btn btn-primary btn-block">Şirket Hesabı Aç</button>
+      </form>
+    </div>
+    <p class="auth-foot">Veriler yalnızca bu cihazda, tarayıcınızda saklanır.</p>
   </div>
 
-  <!-- ===== ÜST MENÜ (NAVBAR) ===== -->
-  <header class="navbar">
-    <div class="container nav-inner">
-      <a href="#hero" class="logo">YSA<span>.</span></a>
-
-      <nav>
-        <ul class="nav-links" id="navLinks">
-          <li><a href="#hakkimda">Hakkımda</a></li>
-          <li><a href="#projeler">Projelerim</a></li>
-        </ul>
-      </nav>
-
-      <!-- Mobil hamburger menü butonu -->
-      <button class="hamburger" id="hamburger" aria-label="Menüyü aç/kapat">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </header>
-
-  <!-- ===== HERO (GİRİŞ) ===== -->
-  <section class="hero" id="hero">
-    <div class="container hero-inner">
-      <!-- Profil fotoğrafı yer tutucusu: kendi fotonu assets\ klasörüne koyup
-           aşağıdaki <div> yerine <img src="assets/foto.jpg" ...> kullanabilirsin -->
-      <div class="avatar">YSA</div>
-
-      <h1>Merhaba, ben <span class="gradient-text">Yavuz Selim Aykaç</span> 👋</h1>
-      <p class="subtitle">6. sınıf öğrencisi &amp; bilgisayar meraklısı 💻</p>
-
-      <div class="hero-buttons">
-        <a href="#projeler" class="btn btn-primary">Projelerimi Gör</a>
-        <a href="#hakkimda" class="btn btn-ghost">Beni Tanı</a>
-      </div>
-
-      <a href="#hakkimda" class="scroll-down" aria-label="Aşağı kaydır">↓</a>
-    </div>
-  </section>
-
-  <!-- ===== HAKKIMDA ===== -->
-  <section class="section" id="hakkimda">
-    <div class="container">
-      <h2 class="section-title reveal">Hakkımda</h2>
-
-      <!-- buraya kendi tanıtım metnini yazabilirsin -->
-      <p class="section-text reveal">
-        Merhaba! Ben Yavuz Selim. Bilgisayarlarla iç içe yaşamayı çok seviyorum ve
-        derslerimde başarılıyım. Yeni şeyler öğrenmeyi, kod yazmayı ve teknolojiyle
-        ilgili her şeyi keşfetmeyi seviyorum. İleride bilgisayar dünyasında güzel
-        işler yapmak istiyorum. 🚀
-      </p>
-
-      <div class="info-cards">
-        <!-- buraya kendi bilgilerini yazabilirsin -->
-        <div class="info-card reveal">
-          <span class="info-emoji">🎓</span>
-          <h3>Sınıf</h3>
-          <p>6. sınıf öğrencisi</p>
-        </div>
-        <div class="info-card reveal">
-          <span class="info-emoji">💻</span>
-          <h3>İlgi Alanım</h3>
-          <p>Bilgisayar &amp; kodlama</p>
-        </div>
-        <div class="info-card reveal">
-          <span class="info-emoji">📚</span>
-          <h3>En Sevdiğim Ders</h3>
-          <p>Bilişim Teknolojileri</p>
-        </div>
-        <div class="info-card reveal">
-          <span class="info-emoji">🌟</span>
-          <h3>Hedefim</h3>
-          <p>İyi bir yazılımcı olmak</p>
+  <!-- ======================= UYGULAMA ======================= -->
+  <div id="app-screen" class="app-screen hidden">
+    <header class="app-header">
+      <div class="app-header-left">
+        <div class="company-badge" id="company-initial">?</div>
+        <div>
+          <div class="company-name" id="company-name">Şirket</div>
+          <div class="company-owner" id="company-owner"></div>
         </div>
       </div>
+      <button class="btn btn-ghost" id="logout-btn">Çıkış</button>
+    </header>
+
+    <nav class="app-nav">
+      <button class="nav-btn active" data-view="today">Bugün</button>
+      <button class="nav-btn" data-view="reports">Raporlar</button>
+    </nav>
+
+    <main class="app-main">
+
+      <!-- BUGÜN GÖRÜNÜMÜ -->
+      <section id="view-today" class="view">
+        <div class="day-summary">
+          <div class="summary-box">
+            <span class="summary-label">Bugünün Tarihi</span>
+            <span class="summary-value" id="today-date">—</span>
+          </div>
+          <div class="summary-box">
+            <span class="summary-label">İş Sayısı</span>
+            <span class="summary-value" id="today-count">0</span>
+          </div>
+          <div class="summary-box accent">
+            <span class="summary-label">Toplam Kazanç</span>
+            <span class="summary-value" id="today-total">0 ₺</span>
+          </div>
+        </div>
+
+        <div class="section-actions">
+          <button class="btn btn-primary" id="add-job-btn">+ Yeni İş Ekle</button>
+          <button class="btn btn-success" id="end-day-btn">Gün Sonu Yap</button>
+        </div>
+
+        <div id="today-jobs" class="job-list"></div>
+        <div id="today-empty" class="empty-state hidden">
+          <p>Bugün için henüz iş eklemediniz.</p>
+          <p class="empty-hint">“Yeni İş Ekle” ile başlayın.</p>
+        </div>
+      </section>
+
+      <!-- RAPORLAR GÖRÜNÜMÜ -->
+      <section id="view-reports" class="view hidden">
+        <h2 class="view-title">Günlük Raporlar</h2>
+        <div id="reports-list" class="report-list"></div>
+        <div id="reports-empty" class="empty-state hidden">
+          <p>Henüz gün sonu raporu oluşturmadınız.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ======================= İŞ EKLEME MODALI ======================= -->
+  <div id="job-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>Yeni İş</h3>
+        <button class="modal-close" id="job-modal-close">&times;</button>
+      </div>
+      <form id="job-form" class="modal-body">
+        <label>İş Açıklaması
+          <input type="text" id="job-desc" placeholder="Örn: Kombi bakımı" required />
+        </label>
+        <label>Konum / Müşteri (isteğe bağlı)
+          <input type="text" id="job-location" placeholder="Örn: Çankaya / Ahmet Bey" />
+        </label>
+        <label>Alınan Ücret (₺)
+          <input type="number" id="job-amount" inputmode="decimal" min="0" step="any" placeholder="0" required />
+        </label>
+
+        <label>Fotoğraflar</label>
+        <div class="photo-input-row">
+          <label class="photo-btn">
+            📷 Fotoğraf Ekle
+            <input type="file" id="job-photos" accept="image/*" capture="environment" multiple hidden />
+          </label>
+        </div>
+        <div id="photo-preview" class="photo-preview"></div>
+
+        <p class="form-error" id="job-error"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="job-cancel">Vazgeç</button>
+          <button type="submit" class="btn btn-primary">Kaydet</button>
+        </div>
+      </form>
     </div>
-  </section>
+  </div>
 
-  <!-- ===== PROJELERİM / HOBİLERİM ===== -->
-  <section class="section section-alt" id="projeler">
-    <div class="container">
-      <h2 class="section-title reveal">Projelerim &amp; Hobilerim</h2>
-      <p class="section-text reveal">Üzerinde çalıştığım ve yapmaktan keyif aldığım şeyler:</p>
+  <!-- ======================= FOTOĞRAF BÜYÜTME ======================= -->
+  <div id="lightbox" class="lightbox hidden">
+    <button class="lightbox-close" id="lightbox-close">&times;</button>
+    <img id="lightbox-img" src="" alt="Fotoğraf" />
+  </div>
 
-      <div class="project-grid">
-        <!-- Her kart bir proje/hobi. Başlık ve açıklamayı kendine göre değiştir -->
-        <article class="project-card reveal">
-          <div class="project-icon">🌐</div>
-          <h3>İlk Web Sitem</h3>
-          <p>HTML ve CSS kullanarak kendi kişisel sitemi tasarladım. (İşte bu site!)</p>
-        </article>
-
-        <article class="project-card reveal">
-          <div class="project-icon">🎮</div>
-          <h3>Scratch Oyunum</h3>
-          <p>Scratch ile küçük bir oyun yaptım. Karakterler ve puan sistemi ekledim.</p>
-        </article>
-
-        <article class="project-card reveal">
-          <div class="project-icon">🤖</div>
-          <h3>Lego &amp; Robotik</h3>
-          <p>Lego parçalarıyla robot tasarlayıp hareket ettirmeyi çok seviyorum.</p>
-        </article>
-
-        <article class="project-card reveal">
-          <div class="project-icon">🛠️</div>
-          <h3>Bilgisayar Toplama</h3>
-          <p>Bilgisayar parçalarını öğreniyor, nasıl çalıştıklarını araştırıyorum.</p>
-        </article>
-
-        <article class="project-card reveal">
-          <div class="project-icon">🧠</div>
-          <h3>Jarvis'i Gerçek Hayata Taşıdım</h3>
-          <p>Filmlerdeki Jarvis gibi sesle komut alıp cevap verebilen bir yapay zeka
-             asistanı üzerinde çalıştım. Konuşunca beni anlıyor! 🎙️</p>
-        </article>
+  <!-- ======================= ONAY MODALI ======================= -->
+  <div id="confirm-modal" class="modal hidden">
+    <div class="modal-card modal-sm">
+      <div class="modal-head">
+        <h3 id="confirm-title">Onay</h3>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-text">Emin misiniz?</p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="confirm-no">Vazgeç</button>
+          <button type="button" class="btn btn-danger" id="confirm-yes">Evet</button>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- ===== FOOTER ===== -->
-  <footer class="footer">
-    <div class="container">
-      <p class="footer-name">Yavuz Selim Aykaç</p>
-      <p class="footer-small">Bilgisayar meraklısı &amp; öğrenci</p>
-      <p class="footer-copy">© 2026 — Tüm hakları saklıdır.</p>
-    </div>
-  </footer>
+  <div id="toast" class="toast hidden"></div>
 
-  <script src="script.js"></script>
+  <script src="db.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
