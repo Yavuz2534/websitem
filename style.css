@@ -379,6 +379,111 @@ body {
 @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
 /* ============================================================
+   SERVİS YÖNETİMİ — EK BİLEŞENLER
+   ============================================================ */
+.form-hint { font-size: 12px; color: var(--text-soft); line-height: 1.4; }
+.divider-text {
+  font-size: 12px; font-weight: 700; color: var(--text-soft);
+  text-transform: uppercase; letter-spacing: .4px;
+  border-top: 1px solid var(--border); padding-top: 12px; margin-top: 4px;
+}
+.header-actions { display: flex; align-items: center; gap: 8px; }
+
+/* Rol rozeti */
+.role-badge {
+  display: inline-block;
+  font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+  background: #e0e7ff; color: #3730a3;
+  vertical-align: middle;
+}
+.role-badge.owner { background: #fef3c7; color: #92400e; }
+.role-badge.usta { background: #dbeafe; color: #1e40af; }
+
+/* Çalışma alanı seçimi */
+.workspace-screen { max-width: 760px; margin: 0 auto; min-height: 100vh; }
+.workspace-list { display: flex; flex-direction: column; gap: 12px; }
+.workspace-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; cursor: pointer;
+  text-align: left; font-family: inherit; box-shadow: var(--shadow);
+  transition: transform .05s, border .2s;
+}
+.workspace-card:hover { border-color: var(--primary); }
+.workspace-card:active { transform: translateY(1px); }
+.workspace-info { flex: 1; }
+.workspace-card .company-name { color: var(--text); }
+
+/* Servis kartları */
+.service-list { display: flex; flex-direction: column; gap: 12px; }
+.service-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; cursor: pointer;
+  box-shadow: var(--shadow); transition: transform .05s, border .2s;
+}
+.service-card:hover { border-color: var(--primary); }
+.service-card:active { transform: translateY(1px); }
+.service-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.service-time { font-size: 12px; color: var(--text-soft); }
+.service-customer { font-size: 16px; }
+.service-problem { font-size: 14px; color: var(--text); margin-top: 2px; }
+.service-line { font-size: 13px; color: var(--text-soft); margin-top: 4px; }
+.service-line.muted { color: #cbd5e1; }
+.service-line.strong { color: var(--success); font-weight: 700; }
+
+/* Durum rozetleri */
+.status-badge {
+  font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+}
+.st-open { background: #f1f5f9; color: #475569; }
+.st-assigned { background: #e0e7ff; color: #3730a3; }
+.st-enroute { background: #fef9c3; color: #854d0e; }
+.st-completed { background: #dcfce7; color: #166534; }
+.st-closed { background: #e2e8f0; color: #64748b; }
+
+/* Filtre çipleri */
+.filter-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 14px; }
+.chip {
+  border: 1px solid var(--border); background: var(--surface);
+  border-radius: 20px; padding: 7px 14px; font-size: 13px; font-weight: 600;
+  color: var(--text-soft); cursor: pointer; white-space: nowrap; font-family: inherit;
+}
+.chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Üye / çalışan kartları */
+.member-list { display: flex; flex-direction: column; gap: 10px; }
+.member-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow);
+}
+.company-badge.sm { width: 38px; height: 38px; font-size: 16px; border-radius: 10px; }
+.member-info { flex: 1; min-width: 0; }
+.member-name { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.member-meta { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+.icon-btn { background: transparent; border: none; font-size: 18px; cursor: pointer; padding: 6px; border-radius: 8px; }
+.icon-btn:hover { background: var(--surface-2); }
+.emp-new { display: flex; flex-direction: column; gap: 14px; }
+
+.modal-body select {
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 14px; font-size: 15px; font-family: inherit; background: var(--surface);
+}
+
+/* Servis detayı */
+.detail-status { margin-bottom: 4px; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.detail-grid .full { grid-column: 1 / -1; }
+.dt-label { display: block; font-size: 11px; color: var(--text-soft); text-transform: uppercase; letter-spacing: .3px; }
+.dt-val { font-size: 15px; font-weight: 600; }
+.dt-val.strong { color: var(--success); }
+.timeline { list-style: none; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 12px; }
+.timeline li { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; color: var(--text-soft); }
+.detail-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.detail-actions .btn { width: 100%; }
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (min-width: 540px) {

@@ -4,29 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0f172a" />
-  <title>İş Takip Sistemi</title>
+  <title>Servis Takip Sistemi</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ======================= GİRİŞ / KAYIT EKRANI ======================= -->
+  <!-- ======================= GİRİŞ / KAYIT (KİŞİSEL HESAP) ======================= -->
   <div id="auth-screen" class="auth-screen">
     <div class="auth-card">
       <div class="brand">
-        <div class="brand-logo">İT</div>
-        <h1>İş Takip Sistemi</h1>
-        <p class="brand-sub">Şirketinizin günlük işlerini ve kazancını takip edin</p>
+        <div class="brand-logo">ST</div>
+        <h1>Servis Takip Sistemi</h1>
+        <p class="brand-sub">Çağrıdan tahsilata kadar tüm servis sürecini yönetin</p>
       </div>
 
       <div class="tabs">
         <button class="tab active" data-tab="login">Giriş Yap</button>
-        <button class="tab" data-tab="register">Hesap Aç</button>
+        <button class="tab" data-tab="register">Kişisel Hesap Aç</button>
       </div>
 
-      <!-- Giriş Formu -->
+      <!-- Giriş -->
       <form id="login-form" class="auth-form">
-        <label>Kullanıcı Adı
-          <input type="text" id="login-username" autocomplete="username" required />
+        <label>E-posta
+          <input type="email" id="login-email" autocomplete="email" inputmode="email" required />
         </label>
         <label>Şifre
           <input type="password" id="login-password" autocomplete="current-password" required />
@@ -35,121 +35,275 @@
         <button type="submit" class="btn btn-primary btn-block">Giriş Yap</button>
       </form>
 
-      <!-- Kayıt Formu -->
+      <!-- Kayıt (kişisel) -->
       <form id="register-form" class="auth-form hidden">
-        <label>Şirket Adı
-          <input type="text" id="reg-company" placeholder="Örn: Aykaç İnşaat" required />
+        <label>Ad Soyad
+          <input type="text" id="reg-name" placeholder="Örn: Yavuz Selim Aykaç" required />
         </label>
-        <label>Ad Soyad (Yetkili)
-          <input type="text" id="reg-owner" placeholder="Örn: Yavuz Selim Aykaç" />
+        <label>Telefon (WhatsApp)
+          <input type="tel" id="reg-phone" inputmode="tel" placeholder="Örn: 0532 123 45 67" required />
         </label>
-        <label>Kullanıcı Adı
-          <input type="text" id="reg-username" autocomplete="username" required />
+        <label>E-posta
+          <input type="email" id="reg-email" autocomplete="email" inputmode="email" placeholder="ornek@eposta.com" required />
         </label>
         <label>Şifre
-          <input type="password" id="reg-password" autocomplete="new-password" required minlength="4" />
+          <input type="password" id="reg-password" autocomplete="new-password" required minlength="6" />
         </label>
+        <p class="form-hint">Kişisel hesap açarsınız. Sonra şirket kurabilir ya da bir şirkete çalışan olarak eklenebilirsiniz.</p>
         <p class="form-error" id="register-error"></p>
-        <button type="submit" class="btn btn-primary btn-block">Şirket Hesabı Aç</button>
+        <button type="submit" class="btn btn-primary btn-block">Kişisel Hesap Aç</button>
       </form>
     </div>
-    <p class="auth-foot">Veriler yalnızca bu cihazda, tarayıcınızda saklanır.</p>
+    <p class="auth-foot">Veriler bu cihazda, tarayıcınızda saklanır.</p>
   </div>
 
-  <!-- ======================= UYGULAMA ======================= -->
+  <!-- ======================= ÇALIŞMA ALANI SEÇİMİ ======================= -->
+  <div id="workspace-screen" class="workspace-screen hidden">
+    <header class="app-header">
+      <div class="app-header-left">
+        <div class="company-badge" id="ws-user-initial">?</div>
+        <div>
+          <div class="company-name" id="ws-user-name">Kullanıcı</div>
+          <div class="company-owner">Çalışma alanı seçin</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost" id="ws-logout-btn">Çıkış</button>
+    </header>
+    <main class="app-main">
+      <h2 class="view-title">Şirketleriniz</h2>
+      <div id="workspace-list" class="workspace-list"></div>
+      <div id="workspace-empty" class="empty-state hidden">
+        <p>Henüz bir şirkete bağlı değilsiniz.</p>
+        <p class="empty-hint">Kendi şirketinizi kurun ya da bir patronun sizi kullanıcı adınızla eklemesini bekleyin.</p>
+      </div>
+      <div class="section-actions" style="margin-top:18px">
+        <button class="btn btn-primary" id="create-company-btn">+ Şirket Oluştur</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ======================= ANA UYGULAMA ======================= -->
   <div id="app-screen" class="app-screen hidden">
     <header class="app-header">
       <div class="app-header-left">
         <div class="company-badge" id="company-initial">?</div>
         <div>
           <div class="company-name" id="company-name">Şirket</div>
-          <div class="company-owner" id="company-owner"></div>
+          <div class="company-owner"><span id="user-role-badge" class="role-badge">—</span> <span id="current-user-name"></span></div>
         </div>
       </div>
-      <button class="btn btn-ghost" id="logout-btn">Çıkış</button>
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" id="switch-company-btn" title="Çalışma alanını değiştir">↕</button>
+        <button class="btn btn-ghost" id="logout-btn">Çıkış</button>
+      </div>
     </header>
 
     <nav class="app-nav">
-      <button class="nav-btn active" data-view="today">Bugün</button>
+      <button class="nav-btn active" data-view="services">Servisler</button>
+      <button class="nav-btn owner-only" data-view="employees">Çalışanlar</button>
       <button class="nav-btn" data-view="reports">Raporlar</button>
     </nav>
 
     <main class="app-main">
 
-      <!-- BUGÜN GÖRÜNÜMÜ -->
-      <section id="view-today" class="view">
+      <!-- SERVİSLER -->
+      <section id="view-services" class="view">
         <div class="day-summary">
           <div class="summary-box">
-            <span class="summary-label">Bugünün Tarihi</span>
-            <span class="summary-value" id="today-date">—</span>
+            <span class="summary-label">Açık Servis</span>
+            <span class="summary-value" id="stat-open">0</span>
           </div>
           <div class="summary-box">
-            <span class="summary-label">İş Sayısı</span>
-            <span class="summary-value" id="today-count">0</span>
+            <span class="summary-label">Tamamlanan (bugün)</span>
+            <span class="summary-value" id="stat-done">0</span>
           </div>
           <div class="summary-box accent">
-            <span class="summary-label">Toplam Kazanç</span>
-            <span class="summary-value" id="today-total">0 ₺</span>
+            <span class="summary-label">Tahsilat (bugün)</span>
+            <span class="summary-value" id="stat-total">0 ₺</span>
           </div>
         </div>
 
-        <div class="section-actions">
-          <button class="btn btn-primary" id="add-job-btn">+ Yeni İş Ekle</button>
-          <button class="btn btn-success" id="end-day-btn">Gün Sonu Yap</button>
+        <div class="section-actions owner-only">
+          <button class="btn btn-primary" id="add-service-btn">+ Yeni Servis Kaydı</button>
         </div>
 
-        <div id="today-jobs" class="job-list"></div>
-        <div id="today-empty" class="empty-state hidden">
-          <p>Bugün için henüz iş eklemediniz.</p>
-          <p class="empty-hint">“Yeni İş Ekle” ile başlayın.</p>
+        <div class="filter-chips" id="status-filter">
+          <button class="chip active" data-status="active">Aktif</button>
+          <button class="chip" data-status="open">Yeni</button>
+          <button class="chip" data-status="assigned">Atandı</button>
+          <button class="chip" data-status="enroute">Yolda</button>
+          <button class="chip" data-status="completed">Tamamlandı</button>
+          <button class="chip" data-status="closed">Kapandı</button>
+          <button class="chip" data-status="all">Tümü</button>
+        </div>
+
+        <div id="service-list" class="service-list"></div>
+        <div id="services-empty" class="empty-state hidden">
+          <p>Bu filtrede servis kaydı yok.</p>
         </div>
       </section>
 
-      <!-- RAPORLAR GÖRÜNÜMÜ -->
+      <!-- ÇALIŞANLAR -->
+      <section id="view-employees" class="view hidden">
+        <h2 class="view-title">Çalışanlar</h2>
+        <div class="section-actions">
+          <button class="btn btn-primary" id="add-employee-btn">+ Çalışan Ekle</button>
+        </div>
+        <div id="employee-list" class="member-list"></div>
+      </section>
+
+      <!-- RAPORLAR -->
       <section id="view-reports" class="view hidden">
-        <h2 class="view-title">Günlük Raporlar</h2>
+        <h2 class="view-title">Kapanan Servisler / Raporlar</h2>
+        <div class="day-summary">
+          <div class="summary-box">
+            <span class="summary-label">Kapanan Servis</span>
+            <span class="summary-value" id="rep-count">0</span>
+          </div>
+          <div class="summary-box accent">
+            <span class="summary-label">Toplam Tahsilat</span>
+            <span class="summary-value" id="rep-total">0 ₺</span>
+          </div>
+        </div>
         <div id="reports-list" class="report-list"></div>
         <div id="reports-empty" class="empty-state hidden">
-          <p>Henüz gün sonu raporu oluşturmadınız.</p>
+          <p>Henüz kapanan servis yok.</p>
         </div>
       </section>
 
     </main>
   </div>
 
-  <!-- ======================= İŞ EKLEME MODALI ======================= -->
-  <div id="job-modal" class="modal hidden">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3>Yeni İş</h3>
-        <button class="modal-close" id="job-modal-close">&times;</button>
-      </div>
-      <form id="job-form" class="modal-body">
-        <label>İş Açıklaması
-          <input type="text" id="job-desc" placeholder="Örn: Kombi bakımı" required />
+  <!-- ======================= ŞİRKET OLUŞTURMA MODALI ======================= -->
+  <div id="company-modal" class="modal hidden">
+    <div class="modal-card modal-sm">
+      <div class="modal-head"><h3>Şirket Oluştur</h3><button class="modal-close" data-close="company-modal">&times;</button></div>
+      <form id="company-form" class="modal-body">
+        <label>Şirket Adı
+          <input type="text" id="company-input-name" placeholder="Örn: Aykaç Isı Sistemleri" required />
         </label>
-        <label>Konum / Müşteri (isteğe bağlı)
-          <input type="text" id="job-location" placeholder="Örn: Çankaya / Ahmet Bey" />
+        <p class="form-hint">Bu şirketin sahibi (patron) siz olursunuz. Sonra çalışan ekleyebilirsiniz.</p>
+        <p class="form-error" id="company-error"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close="company-modal">Vazgeç</button>
+          <button type="submit" class="btn btn-primary">Oluştur</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================= ÇALIŞAN EKLEME MODALI ======================= -->
+  <div id="employee-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><h3>Çalışan Ekle</h3><button class="modal-close" data-close="employee-modal">&times;</button></div>
+      <form id="employee-form" class="modal-body">
+        <label>E-posta
+          <input type="email" id="emp-email" inputmode="email" placeholder="Eklenecek kişinin e-postası" required />
+        </label>
+        <p class="form-hint">Bu e-postaya sahip biri varsa şirkete eklenir. Yoksa aşağıdan yeni bir usta hesabı oluşturup ekleyebilirsiniz.</p>
+
+        <div id="emp-new-fields" class="emp-new hidden">
+          <div class="divider-text">Yeni usta hesabı oluştur</div>
+          <label>Ad Soyad
+            <input type="text" id="emp-name" placeholder="Örn: Mehmet Usta" />
+          </label>
+          <label>Telefon (WhatsApp)
+            <input type="tel" id="emp-phone" inputmode="tel" placeholder="Örn: 0532 000 00 00" />
+          </label>
+          <label>Şifre (ustaya verilecek)
+            <input type="text" id="emp-password" placeholder="En az 6 karakter" />
+          </label>
+        </div>
+
+        <p class="form-error" id="employee-error"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close="employee-modal">Vazgeç</button>
+          <button type="submit" class="btn btn-primary" id="emp-submit">Ekle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================= YENİ SERVİS MODALI ======================= -->
+  <div id="service-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><h3>Yeni Servis Kaydı</h3><button class="modal-close" data-close="service-modal">&times;</button></div>
+      <form id="service-form" class="modal-body">
+        <label>Müşteri Adı
+          <input type="text" id="svc-customer" placeholder="Örn: Ahmet Yılmaz" required />
+        </label>
+        <label>Müşteri Telefonu (WhatsApp)
+          <input type="tel" id="svc-phone" inputmode="tel" placeholder="Örn: 0533 111 22 33" required />
+        </label>
+        <label>Adres
+          <input type="text" id="svc-address" placeholder="Örn: Çankaya / Mahalle, Sokak No" />
+        </label>
+        <label>Arıza / Talep
+          <input type="text" id="svc-problem" placeholder="Örn: Kombi yanmıyor" required />
+        </label>
+        <label>Usta Ata (isteğe bağlı)
+          <select id="svc-assign"></select>
+        </label>
+        <p class="form-error" id="service-error"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close="service-modal">Vazgeç</button>
+          <button type="submit" class="btn btn-primary">Servisi Aç</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================= USTA ATAMA MODALI ======================= -->
+  <div id="assign-modal" class="modal hidden">
+    <div class="modal-card modal-sm">
+      <div class="modal-head"><h3>Usta Ata</h3><button class="modal-close" data-close="assign-modal">&times;</button></div>
+      <form id="assign-form" class="modal-body">
+        <label>Usta Seç
+          <select id="assign-select" required></select>
+        </label>
+        <p class="form-hint">Atayınca ustaya WhatsApp ile servis bilgisi göndermek için bağlantı açılır.</p>
+        <p class="form-error" id="assign-error"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close="assign-modal">Vazgeç</button>
+          <button type="submit" class="btn btn-primary">Ata</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================= İŞ TAMAMLAMA MODALI ======================= -->
+  <div id="complete-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><h3>İşi Tamamla</h3><button class="modal-close" data-close="complete-modal">&times;</button></div>
+      <form id="complete-form" class="modal-body">
+        <label>Yapılan İşin Açıklaması
+          <input type="text" id="cmp-desc" placeholder="Örn: Kombi kartı değişti, bakım yapıldı" required />
         </label>
         <label>Alınan Ücret (₺)
-          <input type="number" id="job-amount" inputmode="decimal" min="0" step="any" placeholder="0" required />
+          <input type="number" id="cmp-amount" inputmode="decimal" min="0" step="any" placeholder="0" required />
         </label>
-
         <label>Fotoğraflar</label>
         <div class="photo-input-row">
           <label class="photo-btn">
             📷 Fotoğraf Ekle
-            <input type="file" id="job-photos" accept="image/*" capture="environment" multiple hidden />
+            <input type="file" id="cmp-photos" accept="image/*" capture="environment" multiple hidden />
           </label>
         </div>
-        <div id="photo-preview" class="photo-preview"></div>
-
-        <p class="form-error" id="job-error"></p>
+        <div id="cmp-photo-preview" class="photo-preview"></div>
+        <p class="form-error" id="complete-error"></p>
         <div class="modal-actions">
-          <button type="button" class="btn btn-ghost" id="job-cancel">Vazgeç</button>
-          <button type="submit" class="btn btn-primary">Kaydet</button>
+          <button type="button" class="btn btn-ghost" data-close="complete-modal">Vazgeç</button>
+          <button type="submit" class="btn btn-success">Tamamla</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ======================= SERVİS DETAY MODALI ======================= -->
+  <div id="detail-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><h3 id="detail-title">Servis Detayı</h3><button class="modal-close" data-close="detail-modal">&times;</button></div>
+      <div class="modal-body" id="detail-body"></div>
     </div>
   </div>
 
@@ -162,9 +316,7 @@
   <!-- ======================= ONAY MODALI ======================= -->
   <div id="confirm-modal" class="modal hidden">
     <div class="modal-card modal-sm">
-      <div class="modal-head">
-        <h3 id="confirm-title">Onay</h3>
-      </div>
+      <div class="modal-head"><h3 id="confirm-title">Onay</h3></div>
       <div class="modal-body">
         <p id="confirm-text">Emin misiniz?</p>
         <div class="modal-actions">
@@ -177,7 +329,8 @@
 
   <div id="toast" class="toast hidden"></div>
 
-  <script src="db.js"></script>
-  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="db.js?v=2"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>
