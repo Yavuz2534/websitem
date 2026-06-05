@@ -153,6 +153,7 @@
       const password = $("#reg-password").value;
       if (!name || !email || !password) { err.textContent = "Lütfen zorunlu alanları doldurun."; return; }
       if (password.length < 6) { err.textContent = "Şifre en az 6 karakter olmalı."; return; }
+      const btn = e.submitter; if (btn) btn.classList.add("is-loading");
       try {
         await Auth.signUp({ email, password, displayName: name, phone, username: email.split("@")[0] });
         const profile = await Auth.currentUser();
@@ -163,7 +164,7 @@
         console.error(ex);
         err.textContent = /registered|already/i.test(ex.message || "")
           ? "Bu e-posta zaten kayıtlı." : "Hesap oluşturulamadı: " + (ex.message || "");
-      }
+      } finally { if (btn) btn.classList.remove("is-loading"); }
     });
 
     // Giriş (e-posta + şifre)
@@ -172,6 +173,7 @@
       const err = $("#login-error"); err.textContent = "";
       const email = $("#login-email").value.trim().toLowerCase();
       const password = $("#login-password").value;
+      const btn = e.submitter; if (btn) btn.classList.add("is-loading");
       try {
         await Auth.signIn({ email, password });
         const profile = await Auth.currentUser();
@@ -180,7 +182,7 @@
       } catch (ex) {
         console.error(ex);
         err.textContent = "E-posta veya şifre hatalı.";
-      }
+      } finally { if (btn) btn.classList.remove("is-loading"); }
     });
 
     const doLogout = async () => {
@@ -285,6 +287,7 @@
       const err = $("#company-error"); err.textContent = "";
       const name = $("#company-input-name").value.trim();
       if (!name) { err.textContent = "Şirket adı gerekli."; return; }
+      const btn = e.submitter; if (btn) btn.classList.add("is-loading");
       try {
         const company = await DB.addCompany({ name, ownerId: currentUser.id });
         await DB.addMember({
@@ -295,6 +298,7 @@
         toast("Şirket oluşturuldu 🎉");
         enterWorkspace(company.id);
       } catch (ex) { console.error(ex); err.textContent = "Şirket oluşturulamadı: " + (ex.message || ""); }
+      finally { if (btn) btn.classList.remove("is-loading"); }
     });
   }
 
@@ -440,6 +444,7 @@
         assignedAt: assignedUserId ? Date.now() : null,
         enrouteAt: null, completion: null, payment: null, closedAt: null,
       };
+      const btn = e.submitter; if (btn) btn.classList.add("is-loading");
       try {
         await DB.addService(service);
         hideModal("service-modal");
@@ -447,6 +452,7 @@
         renderServices();
         if (assignedUserId) notifyTechAssigned(service);
       } catch (ex) { console.error(ex); err.textContent = "Kaydedilemedi."; }
+      finally { if (btn) btn.classList.remove("is-loading"); }
     });
   }
 
@@ -514,6 +520,7 @@
       if (!s) return;
       s.completion = { description: desc, amount, photos: pendingPhotos.slice(), completedAt: Date.now(), completedBy: currentUser.id };
       s.status = "completed";
+      const btn = e.submitter; if (btn) btn.classList.add("is-loading");
       try {
         await DB.updateService(s);
         hideModal("complete-modal");
@@ -521,6 +528,7 @@
         renderServices();
         openDetail(s.id);
       } catch (ex) { console.error(ex); err.textContent = "Kaydedilemedi (fotoğraflar büyük olabilir)."; }
+      finally { if (btn) btn.classList.remove("is-loading"); }
     });
   }
   function openComplete(serviceId) {
@@ -730,6 +738,7 @@
       if (!email) { err.textContent = "E-posta gerekli."; return; }
       const newFields = $("#emp-new-fields");
 
+      const btn = e.submitter; if (btn) btn.classList.add("is-loading");
       try {
         let user = await DB.getUserByEmail(email);
 
@@ -767,6 +776,7 @@
         toast(`${user.displayName || user.username} eklendi.`);
         renderEmployees();
       } catch (ex) { console.error(ex); err.textContent = "Eklenemedi: " + (ex.message || ""); }
+      finally { if (btn) btn.classList.remove("is-loading"); }
     });
   }
 

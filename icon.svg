@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#g)"/>
+  <!-- İngiliz anahtarı (servis) -->
+  <path fill="#ffffff" d="M330 150a74 74 0 0 0-96 70c0 9 2 18 5 26L150 342a34 34 0 1 0 48 48l96-89c8 3 17 5 26 5a74 74 0 0 0 70-96 12 12 0 0 0-20-5l-39 39-34-7-7-34 39-39a12 12 0 0 0-5-20 75 75 0 0 0 0 0z"/>
+  <circle cx="174" cy="366" r="13" fill="#2563eb"/>
+</svg>

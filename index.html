@@ -2,10 +2,20 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0f172a" />
   <title>Servis Takip Sistemi</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- PWA / telefona kurulum -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Servis Takip" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
 
@@ -99,9 +109,18 @@
     </header>
 
     <nav class="app-nav">
-      <button class="nav-btn active" data-view="services">Servisler</button>
-      <button class="nav-btn owner-only" data-view="employees">Çalışanlar</button>
-      <button class="nav-btn" data-view="reports">Raporlar</button>
+      <button class="nav-btn active" data-view="services">
+        <svg class="nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.2 4.9l-6 6a1.8 1.8 0 1 0 2.5 2.5l6-6a4 4 0 0 0 4.9-5.2l-2.2 2.2-2.3-.5-.5-2.3 2.3-2.3z"/></svg>
+        <span>Servisler</span>
+      </button>
+      <button class="nav-btn owner-only" data-view="employees">
+        <svg class="nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm-8 0a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm0 2c-2.7 0-5 1.3-5 3.3V19h7v-2.7c0-.9.4-1.7 1-2.4A8 8 0 0 0 8 13zm8 0c-2.7 0-5 1.3-5 3.3V19h10v-2.7c0-2-2.3-3.3-5-3.3z"/></svg>
+        <span>Çalışanlar</span>
+      </button>
+      <button class="nav-btn" data-view="reports">
+        <svg class="nav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm2 8v7h2v-7H7zm4-3v10h2V8h-2zm4 5v5h2v-5h-2z"/></svg>
+        <span>Raporlar</span>
+      </button>
     </nav>
 
     <main class="app-main">
@@ -139,7 +158,9 @@
 
         <div id="service-list" class="service-list"></div>
         <div id="services-empty" class="empty-state hidden">
+          <svg class="empty-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.2 4.9l-6 6a1.8 1.8 0 1 0 2.5 2.5l6-6a4 4 0 0 0 4.9-5.2l-2.2 2.2-2.3-.5-.5-2.3 2.3-2.3z"/></svg>
           <p>Bu filtrede servis kaydı yok.</p>
+          <p class="empty-hint">Yeni bir servis kaydı açmak için yukarıdaki butonu kullanın.</p>
         </div>
       </section>
 
@@ -167,7 +188,9 @@
         </div>
         <div id="reports-list" class="report-list"></div>
         <div id="reports-empty" class="empty-state hidden">
+          <svg class="empty-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm2 8v7h2v-7H7zm4-3v10h2V8h-2zm4 5v5h2v-5h-2z"/></svg>
           <p>Henüz kapanan servis yok.</p>
+          <p class="empty-hint">Tamamlanıp tahsilatı alınan servisler burada listelenir.</p>
         </div>
       </section>
 
@@ -330,7 +353,7 @@
   <div id="toast" class="toast hidden"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="db.js?v=2"></script>
-  <script src="app.js?v=2"></script>
+  <script src="db.js?v=3"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>

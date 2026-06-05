@@ -160,27 +160,40 @@ body {
 .app-header .btn-ghost { color: #cbd5e1; border-color: #334155; }
 .app-header .btn-ghost:hover { background: #1e293b; }
 
+/* Alt menü çubuğu (telefon uygulaması hissi) */
 .app-nav {
+  position: fixed;
+  left: 50%; bottom: 0;
+  transform: translateX(-50%);
+  width: 100%; max-width: 760px;
   display: flex;
   background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 76px; z-index: 9;
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 20px rgba(15, 23, 42, .06);
+  z-index: 20;
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 .nav-btn {
   flex: 1;
   border: none;
   background: transparent;
-  padding: 14px;
-  font-size: 15px;
+  padding: 9px 6px 8px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-soft);
   cursor: pointer;
-  border-bottom: 3px solid transparent;
   font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: color .15s;
 }
-.nav-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.nav-ic { width: 24px; height: 24px; fill: currentColor; }
+.nav-btn.active { color: var(--primary); }
+.nav-btn.active .nav-ic { transform: translateY(-1px); }
 
-.app-main { padding: 20px; }
+.app-main { padding: 20px 20px calc(86px + env(safe-area-inset-bottom, 0)); }
 .view-title { font-size: 18px; margin-bottom: 16px; }
 
 /* ---------------- Bugün özeti ---------------- */
@@ -249,10 +262,17 @@ body {
 /* ---------------- Boş durum ---------------- */
 .empty-state {
   text-align: center;
-  padding: 50px 20px;
+  padding: 48px 24px;
   color: var(--text-soft);
 }
-.empty-hint { font-size: 13px; margin-top: 6px; }
+.empty-ic {
+  width: 56px; height: 56px;
+  margin: 0 auto 14px;
+  display: block;
+  fill: #cbd5e1;
+}
+.empty-state p { font-size: 15px; font-weight: 600; color: var(--text-soft); }
+.empty-hint { font-size: 13px; font-weight: 400; margin-top: 6px; max-width: 320px; margin-left: auto; margin-right: auto; }
 
 /* ============================================================
    MODAL
@@ -493,4 +513,31 @@ body {
 @media (max-width: 380px) {
   .day-summary { grid-template-columns: 1fr 1fr; }
   .summary-box:first-child { grid-column: 1 / -1; }
+}
+
+/* ============================================================
+   CİLA: yükleniyor durumu + geçiş animasyonları
+   ============================================================ */
+/* Butonda dönen yükleniyor göstergesi */
+.btn.is-loading { position: relative; color: transparent !important; pointer-events: none; }
+.btn.is-loading::after {
+  content: "";
+  position: absolute; top: 50%; left: 50%;
+  width: 18px; height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 2px solid rgba(255, 255, 255, .45);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+.btn-ghost.is-loading::after { border-color: rgba(100, 116, 139, .35); border-top-color: var(--text-soft); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Kart giriş animasyonu */
+@keyframes cardIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.service-card, .report-card, .member-card, .workspace-card { animation: cardIn .22s ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .service-card, .report-card, .member-card, .workspace-card { animation: none; }
+  .btn.is-loading::after { animation-duration: 1.2s; }
 }
