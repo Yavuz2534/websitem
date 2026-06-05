@@ -34,7 +34,7 @@
   }
   function rowToCompany(r) {
     if (!r) return null;
-    return { id: r.id, name: r.name, ownerId: r.owner_id, createdAt: toMs(r.created_at) };
+    return { id: r.id, name: r.name, ownerId: r.owner_id, logo: r.logo || null, createdAt: toMs(r.created_at) };
   }
   function rowToMember(r) {
     if (!r) return null;
@@ -161,6 +161,13 @@
     },
     async getCompany(id) {
       const data = must(await sb.from("companies").select("*").eq("id", id).maybeSingle());
+      return rowToCompany(data);
+    },
+    async updateCompany(c) {
+      const row = {};
+      if (c.name !== undefined) row.name = c.name;
+      if (c.logo !== undefined) row.logo = c.logo;
+      const data = must(await sb.from("companies").update(row).eq("id", c.id).select().single());
       return rowToCompany(data);
     },
 

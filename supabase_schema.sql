@@ -19,6 +19,7 @@ create table if not exists public.companies (
   id         uuid primary key default gen_random_uuid(),
   name       text not null,
   owner_id   uuid not null references public.profiles(id) on delete cascade,
+  logo       text,            -- şirket logosu (base64 data URL, isteğe bağlı)
   created_at timestamptz default now()
 );
 create index if not exists companies_owner_idx on public.companies(owner_id);

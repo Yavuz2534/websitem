@@ -235,7 +235,7 @@
       const card = document.createElement("button");
       card.className = "workspace-card";
       card.innerHTML = `
-        <div class="company-badge">${escapeHtml(company.name.charAt(0).toUpperCase())}</div>
+        <div class="company-badge">${company.logo ? `<img src="${company.logo}" alt="logo" style="width:100%;height:100%;object-fit:cover" />` : escapeHtml(company.name.charAt(0).toUpperCase())}</div>
         <div class="workspace-info">
           <div class="company-name">${escapeHtml(company.name)}</div>
           <div class="company-owner"><span class="role-badge ${m.role}">${m.role === "owner" ? "Patron" : "Usta"}</span></div>
@@ -261,9 +261,17 @@
     switchView("services");
   }
 
+  function setBadgeLogo(el, company) {
+    if (company.logo) {
+      el.innerHTML = `<img src="${company.logo}" alt="logo" style="width:100%;height:100%;object-fit:cover" />`;
+    } else {
+      el.textContent = company.name.trim().charAt(0).toUpperCase();
+    }
+  }
+
   function renderHeader() {
     $("#company-name").textContent = currentCompany.name;
-    $("#company-initial").textContent = currentCompany.name.trim().charAt(0).toUpperCase();
+    setBadgeLogo($("#company-initial"), currentCompany);
     $("#current-user-name").textContent = currentUser.displayName || currentUser.username;
     const badge = $("#user-role-badge");
     badge.textContent = currentRole === "owner" ? "Patron" : "Usta";
@@ -621,8 +629,8 @@
       addBtn("İşi Tamamla", "btn-success", () => { hideModal("detail-modal"); openComplete(s.id); });
     }
     if (s.completion) {
-      addBtn("Servis Formu (PDF / Yazdır)", "btn-ghost", () => printServiceForm(s));
-      addBtn("WhatsApp ile Müşteriye Gönder", "btn-ghost", () => sendFormToCustomer(s));
+      addBtn("Servis Formunu Yazdır", "btn-ghost", () => printServiceForm(s));
+      addBtn("📄 Müşteriye PDF Gönder", "btn-primary", (e) => sendFormToCustomer(s, e.currentTarget));
     }
     if (isOwner && s.status === "completed") {
       addBtn("Tahsilatı Al & Servisi Kapat", "btn-success", () => closeService(s.id));
@@ -647,16 +655,36 @@
     openDetail(serviceId);
   }
 
-  function sendFormToCustomer(s) {
-    const c = s.completion;
-    const text =
-      `Merhaba ${s.customerName}, servis işleminiz tamamlandı.\n\n` +
-      `🛠 Yapılan İşlem: ${c.description}\n` +
-      `💰 Tutar: ${formatMoney(c.amount)}\n` +
-      (s.address ? `📍 Adres: ${s.address}\n` : "") +
-      `\n${currentCompany.name} — bizi tercih ettiğiniz için teşekkürler.`;
-    openWa(s.customerPhone, text);
-    toast("Servis formu WhatsApp ile açıldı.");
+  /** Servis formunu PDF dosyası olarak üretip müşteriye iletir (metin değil, PDF). */
+  async function sendFormToCustomer(s, btn) {
+    if (btn) btn.classList.add("is-loading");
+    toast("PDF hazırlanıyor…");
+    try {
+      const { blob, filename } = await generatePdfBlob(s);
+      const file = new File([blob], filename, { type: "application/pdf" });
+      const shareText =
+        `Merhaba ${s.customerName}, servis işleminiz tamamlandı. ` +
+        `Servis formunuz ektedir. ${currentCompany.name}`;
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: "Servis Formu", text: shareText });
+          toast("Paylaşım menüsü açıldı — WhatsApp'tan müşteriye gönderin.");
+          return;
+        } catch (err) {
+          if (err && err.name === "AbortError") return; // kullanıcı vazgeçti
+          console.warn("Paylaşım başarısız, indirmeye düşülüyor", err);
+        }
+      }
+      // Masaüstü / paylaşım desteklemeyen: PDF indir + WhatsApp metnini aç
+      downloadBlob(blob, filename);
+      openWa(s.customerPhone, shareText + " (PDF telefonunuza indirildi, sohbete ekleyebilirsiniz.)");
+      toast("PDF indirildi. WhatsApp penceresine ekleyip gönderebilirsiniz.");
+    } catch (ex) {
+      console.error(ex);
+      toast("PDF oluşturulamadı.");
+    } finally {
+      if (btn) btn.classList.remove("is-loading");
+    }
   }
 
   async function closeService(serviceId) {
@@ -683,39 +711,117 @@
     renderServices();
   }
 
-  /* ---- Servis formu PDF / yazdır ---- */
-  function printServiceForm(s) {
+  /* ---- Servis formu (detaylı) — yazdır ve PDF için ortak şablon ---- */
+  function serviceFormHtml(s) {
     const c = s.completion || {};
-    const win = window.open("", "_blank");
-    const photos = (c.photos || []).map((p) => `<img src="${p}" style="max-width:48%;margin:4px;border:1px solid #cbd5e1;border-radius:6px" />`).join("");
-    win.document.write(`
-      <html lang="tr"><head><meta charset="utf-8"><title>Servis Formu - ${escapeHtml(s.customerName)}</title>
-      <style>
-        body{font-family:Arial,sans-serif;padding:32px;color:#1e293b;max-width:800px;margin:auto}
-        h1{font-size:22px;margin:0 0 2px}
-        .sub{color:#64748b;margin-bottom:20px;font-size:13px}
-        table{width:100%;border-collapse:collapse;margin:14px 0}
-        th,td{border:1px solid #cbd5e1;padding:9px 11px;font-size:14px;text-align:left;vertical-align:top}
-        th{background:#f1f5f9;width:140px}
-        .total{font-size:18px;font-weight:bold;text-align:right;margin-top:10px}
-        .photos{margin-top:14px;display:flex;flex-wrap:wrap}
-      </style></head><body>
-      <h1>${escapeHtml(currentCompany.name)}</h1>
-      <div class="sub">Servis Formu • ${formatDateTR(dateStrOf(c.completedAt || s.createdAt))}</div>
-      <table>
-        <tr><th>Müşteri</th><td>${escapeHtml(s.customerName)}</td></tr>
-        <tr><th>Telefon</th><td>${escapeHtml(s.customerPhone)}</td></tr>
-        <tr><th>Adres</th><td>${escapeHtml(s.address) || "-"}</td></tr>
-        <tr><th>Arıza / Talep</th><td>${escapeHtml(s.problem)}</td></tr>
-        <tr><th>Yapılan İşlem</th><td>${escapeHtml(c.description) || "-"}</td></tr>
-        <tr><th>Usta</th><td>${escapeHtml(s.assignedName) || "-"}</td></tr>
+    const servisNo = (s.id || "").replace(/-/g, "").slice(0, 8).toUpperCase();
+    const logo = currentCompany && currentCompany.logo;
+    const acilis = formatDateTR(dateStrOf(s.createdAt));
+    const tamam = c.completedAt ? formatDateTR(dateStrOf(c.completedAt)) : "—";
+    const td = "border:1px solid #e2e8f0;padding:8px 11px";
+    const th = `${td};background:#f8fafc;font-weight:700`;
+    const photos = (c.photos || [])
+      .map((p) => `<img src="${p}" style="width:31.3%;margin:1%;height:120px;object-fit:cover;border:1px solid #cbd5e1;border-radius:6px" />`).join("");
+    const logoBox = logo
+      ? `<img src="${logo}" style="width:64px;height:64px;object-fit:contain;border-radius:8px" />`
+      : `<div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800">${escapeHtml((currentCompany.name || "?").charAt(0).toUpperCase())}</div>`;
+
+    return `
+    <div style="font-family:Arial,Helvetica,sans-serif;color:#1e293b;width:100%;box-sizing:border-box;padding:28px;background:#fff">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #2563eb;padding-bottom:14px;margin-bottom:18px">
+        <div style="display:flex;gap:14px;align-items:center">
+          ${logoBox}
+          <div>
+            <div style="font-size:22px;font-weight:800">${escapeHtml(currentCompany.name)}</div>
+            <div style="color:#64748b;font-size:13px">Teknik Servis Formu</div>
+          </div>
+        </div>
+        <div style="text-align:right;font-size:12px;color:#64748b;line-height:1.5">
+          <div><b style="color:#1e293b">Servis No</b><br>#${servisNo}</div>
+          <div style="margin-top:6px"><b style="color:#1e293b">Tarih</b><br>${tamam}</div>
+        </div>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:13px">
+        <tr><td style="${th};width:130px">Müşteri</td><td style="${td}">${escapeHtml(s.customerName)}</td>
+            <td style="${th};width:95px">Telefon</td><td style="${td}">${escapeHtml(s.customerPhone)}</td></tr>
+        <tr><td style="${th}">Adres</td><td colspan="3" style="${td}">${escapeHtml(s.address) || "—"}</td></tr>
       </table>
-      <div class="total">TUTAR: ${formatMoney(c.amount)}</div>
-      ${photos ? `<div class="photos">${photos}</div>` : ""}
-      </body></html>`);
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:14px;font-size:13px">
+        <tr><td style="${th};width:130px">Arıza / Talep</td><td style="${td}">${escapeHtml(s.problem)}</td></tr>
+        <tr><td style="${th}">Yapılan İşlem</td><td style="${td}">${escapeHtml(c.description) || "—"}</td></tr>
+        <tr><td style="${th}">İlgili Usta</td><td style="${td}">${escapeHtml(s.assignedName) || "—"}</td></tr>
+        <tr><td style="${th}">Servis Açılış</td><td style="${td}">${acilis}</td></tr>
+      </table>
+
+      ${photos ? `<div style="margin-bottom:14px"><div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:.4px;margin-bottom:6px">FOTOĞRAFLAR</div><div style="display:flex;flex-wrap:wrap">${photos}</div></div>` : ""}
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:26px">
+        <div style="background:#f1f5f9;border-radius:10px;padding:12px 22px;text-align:right">
+          <div style="font-size:11px;color:#64748b;letter-spacing:.4px">TOPLAM TUTAR</div>
+          <div style="font-size:24px;font-weight:800;color:#16a34a">${formatMoney(c.amount)}</div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;margin-top:44px">
+        <div style="text-align:center;width:45%"><div style="border-top:1px solid #94a3b8;padding-top:6px;font-size:12px;color:#64748b">Müşteri İmza</div></div>
+        <div style="text-align:center;width:45%"><div style="border-top:1px solid #94a3b8;padding-top:6px;font-size:12px;color:#64748b">Yetkili İmza</div></div>
+      </div>
+
+      <div style="text-align:center;color:#94a3b8;font-size:11px;margin-top:26px;border-top:1px solid #e2e8f0;padding-top:10px">
+        Bizi tercih ettiğiniz için teşekkür ederiz • ${escapeHtml(currentCompany.name)}
+      </div>
+    </div>`;
+  }
+
+  function printServiceForm(s) {
+    const win = window.open("", "_blank");
+    win.document.write(`<html lang="tr"><head><meta charset="utf-8"><title>Servis Formu - ${escapeHtml(s.customerName)}</title></head><body style="margin:0;background:#fff">${serviceFormHtml(s)}</body></html>`);
     win.document.close();
     win.focus();
-    setTimeout(() => win.print(), 350);
+    setTimeout(() => win.print(), 400);
+  }
+
+  /** Servis formunu gerçek bir PDF Blob'una çevirir (html2canvas + jsPDF). */
+  async function generatePdfBlob(s) {
+    const { jsPDF } = window.jspdf;
+    const holder = document.createElement("div");
+    holder.style.cssText = "position:fixed;left:-9999px;top:0;width:794px;background:#fff;z-index:-1";
+    holder.innerHTML = serviceFormHtml(s);
+    document.body.appendChild(holder);
+    // Görsellerin (logo + fotoğraflar) yüklenmesini bekle
+    await Promise.all(Array.from(holder.querySelectorAll("img")).map((img) =>
+      img.complete ? Promise.resolve() : new Promise((r) => { img.onload = img.onerror = r; })));
+
+    const canvas = await html2canvas(holder, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
+    document.body.removeChild(holder);
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+    const imgH = (canvas.height * pw) / canvas.width;
+    const imgData = canvas.toDataURL("image/jpeg", 0.92);
+
+    let heightLeft = imgH, position = 0;
+    pdf.addImage(imgData, "JPEG", 0, position, pw, imgH);
+    heightLeft -= ph;
+    while (heightLeft > 0) {
+      position -= ph;
+      pdf.addPage();
+      pdf.addImage(imgData, "JPEG", 0, position, pw, imgH);
+      heightLeft -= ph;
+    }
+    const filename = `Servis-Formu-${(s.customerName || "musteri").replace(/\s+/g, "-")}.pdf`;
+    return { blob: pdf.output("blob"), filename };
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
   }
 
   /* ======================================================
@@ -785,6 +891,49 @@
     members.sort((a, b) => (a.role === "owner" ? -1 : 1) - (b.role === "owner" ? -1 : 1));
     const list = $("#employee-list");
     list.innerHTML = "";
+
+    // Şirket logosu kartı (sadece patron)
+    if (currentRole === "owner") {
+      const logoCard = document.createElement("div");
+      logoCard.className = "member-card";
+      logoCard.innerHTML = `
+        <div class="company-badge sm" id="logo-badge"></div>
+        <div class="member-info">
+          <div class="member-name">${escapeHtml(currentCompany.name)}</div>
+          <div class="member-meta">Şirket logosu (form ve başlıkta görünür)</div>
+        </div>
+        <label class="icon-btn" title="Logo yükle" style="cursor:pointer">🖼<input type="file" id="logo-input" accept="image/*" hidden /></label>
+        ${currentCompany.logo ? `<button class="icon-btn" id="logo-remove" title="Logoyu kaldır">🗑</button>` : ""}
+      `;
+      list.appendChild(logoCard);
+      setBadgeLogo(logoCard.querySelector("#logo-badge"), currentCompany);
+      logoCard.querySelector("#logo-input").addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+          const logo = await compressImage(file, 320, 0.85);
+          await DB.updateCompany({ id: currentCompany.id, logo });
+          currentCompany.logo = logo;
+          setBadgeLogo($("#company-initial"), currentCompany);
+          toast("Logo güncellendi.");
+          renderEmployees();
+        } catch (ex) { console.error(ex); toast("Logo yüklenemedi."); }
+        e.target.value = "";
+      });
+      const rm = logoCard.querySelector("#logo-remove");
+      if (rm) rm.addEventListener("click", async () => {
+        const ok = await confirmDialog("Logoyu kaldır", "Şirket logosu kaldırılsın mı?", "Kaldır");
+        if (!ok) return;
+        try {
+          await DB.updateCompany({ id: currentCompany.id, logo: null });
+          currentCompany.logo = null;
+          setBadgeLogo($("#company-initial"), currentCompany);
+          toast("Logo kaldırıldı.");
+          renderEmployees();
+        } catch (ex) { console.error(ex); toast("İşlem başarısız."); }
+      });
+    }
+
     members.forEach((m) => {
       const card = document.createElement("div");
       card.className = "member-card";
