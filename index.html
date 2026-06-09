@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-title" content="Servis Takip" />
   <meta name="mobile-web-app-capable" content="yes" />
 
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
 
@@ -264,6 +264,9 @@
         <label>Arıza / Talep
           <input type="text" id="svc-problem" placeholder="Örn: Kombi yanmıyor" required />
         </label>
+        <label>Servis Ücreti (₺) <span class="label-opt">— isteğe bağlı</span>
+          <input type="number" id="svc-fee" inputmode="decimal" min="0" step="any" placeholder="Örn: 300 (çağrı/keşif ücreti)" />
+        </label>
         <label>Usta Ata (isteğe bağlı)
           <select id="svc-assign"></select>
         </label>
@@ -302,7 +305,7 @@
         <label>Yapılan İşin Açıklaması
           <input type="text" id="cmp-desc" placeholder="Örn: Kombi kartı değişti, bakım yapıldı" required />
         </label>
-        <label>Alınan Ücret (₺)
+        <label>Tamir Ücreti (₺)
           <input type="number" id="cmp-amount" inputmode="decimal" min="0" step="any" placeholder="0" required />
         </label>
         <label>Fotoğraflar</label>
@@ -355,7 +358,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="db.js?v=4"></script>
-  <script src="app.js?v=4"></script>
+  <script src="db.js?v=5"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

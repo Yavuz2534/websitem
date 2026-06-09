@@ -404,6 +404,7 @@ body {
    SERVİS YÖNETİMİ — EK BİLEŞENLER
    ============================================================ */
 .form-hint { font-size: 12px; color: var(--text-soft); line-height: 1.4; }
+.label-opt { font-weight: 400; color: var(--text-soft); font-size: 12px; }
 .divider-text {
   font-size: 12px; font-weight: 700; color: var(--text-soft);
   text-transform: uppercase; letter-spacing: .4px;

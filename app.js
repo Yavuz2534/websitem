@@ -49,6 +49,12 @@
   function formatMoney(n) {
     return new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2 }).format(n || 0) + " ₺";
   }
+  /** Servis ücreti (açılışta) + tamir ücreti (tamamlamada) = toplam. */
+  function serviceTotal(s) {
+    const fee = Number(s.serviceFee) || 0;
+    const repair = s.completion ? Number(s.completion.amount) || 0 : 0;
+    return fee + repair;
+  }
 
   function escapeHtml(str) {
     return String(str == null ? "" : str)
@@ -368,7 +374,7 @@
     const today = todayStr();
     const open = all.filter((s) => s.status !== "closed").length;
     const doneToday = all.filter((s) => (s.status === "completed" || s.status === "closed") && s.completion && dateStrOf(s.completion.completedAt) === today);
-    const totalToday = doneToday.reduce((sum, s) => sum + Number(s.completion.amount || 0), 0);
+    const totalToday = doneToday.reduce((sum, s) => sum + serviceTotal(s), 0);
     $("#stat-open").textContent = open;
     $("#stat-done").textContent = doneToday.length;
     $("#stat-total").textContent = formatMoney(totalToday);
@@ -397,7 +403,9 @@
       <p class="service-problem">${escapeHtml(s.problem)}</p>
       ${s.address ? `<p class="service-line">📍 ${escapeHtml(s.address)}</p>` : ""}
       ${s.assignedName ? `<p class="service-line">🔧 ${escapeHtml(s.assignedName)}</p>` : `<p class="service-line muted">Usta atanmadı</p>`}
-      ${s.completion ? `<p class="service-line strong">${formatMoney(s.completion.amount)}</p>` : ""}
+      ${s.completion
+        ? `<p class="service-line strong">${formatMoney(serviceTotal(s))}</p>`
+        : (s.serviceFee ? `<p class="service-line">💵 Servis ücreti: ${formatMoney(s.serviceFee)}</p>` : "")}
     `;
     card.addEventListener("click", () => openDetail(s.id));
     return card;
@@ -434,6 +442,7 @@
       const customerPhone = $("#svc-phone").value.trim();
       const address = $("#svc-address").value.trim();
       const problem = $("#svc-problem").value.trim();
+      const serviceFee = parseFloat($("#svc-fee").value) || 0;
       if (!customerName || !customerPhone || !problem) { err.textContent = "Müşteri, telefon ve arıza zorunlu."; return; }
 
       const assignSel = $("#svc-assign");
@@ -442,7 +451,7 @@
 
       const service = {
         companyId: currentCompany.id,
-        customerName, customerPhone, address, problem,
+        customerName, customerPhone, address, problem, serviceFee,
         status: assignedUserId ? "assigned" : "open",
         assignedUserId,
         assignedName: assignedUserId ? opt.dataset.name : null,
@@ -595,9 +604,11 @@
         <div class="full"><span class="dt-label">Adres</span><span class="dt-val">${escapeHtml(s.address) || "—"}</span></div>
         <div class="full"><span class="dt-label">Arıza / Talep</span><span class="dt-val">${escapeHtml(s.problem)}</span></div>
         <div class="full"><span class="dt-label">Atanan Usta</span><span class="dt-val">${escapeHtml(s.assignedName) || "—"}</span></div>
+        ${s.serviceFee ? `<div><span class="dt-label">Servis Ücreti</span><span class="dt-val">${formatMoney(s.serviceFee)}</span></div>` : ""}
         ${s.completion ? `
           <div class="full"><span class="dt-label">Yapılan İş</span><span class="dt-val">${escapeHtml(s.completion.description)}</span></div>
-          <div><span class="dt-label">Tutar</span><span class="dt-val strong">${formatMoney(s.completion.amount)}</span></div>
+          <div><span class="dt-label">Tamir Ücreti</span><span class="dt-val">${formatMoney(s.completion.amount)}</span></div>
+          <div><span class="dt-label">Toplam</span><span class="dt-val strong">${formatMoney(serviceTotal(s))}</span></div>
           ${s.payment ? `<div><span class="dt-label">Tahsilat</span><span class="dt-val">${escapeHtml(s.payment.method || "Alındı")}</span></div>` : ""}
         ` : ""}
       </div>
@@ -691,10 +702,10 @@
     const s = await DB.getService(serviceId);
     if (!s) return;
     const ok = await confirmDialog("Tahsilat & Kapanış",
-      `${s.customerName} — ${formatMoney(s.completion.amount)} tahsil edildi olarak işaretlenip servis kapatılsın mı?`, "Kapat");
+      `${s.customerName} — ${formatMoney(serviceTotal(s))} tahsil edildi olarak işaretlenip servis kapatılsın mı?`, "Kapat");
     if (!ok) return;
     s.status = "closed";
-    s.payment = { amount: s.completion.amount, method: "Tahsil edildi", collectedAt: Date.now() };
+    s.payment = { amount: serviceTotal(s), method: "Tahsil edildi", collectedAt: Date.now() };
     s.closedAt = Date.now();
     await DB.updateService(s);
     hideModal("detail-modal");
@@ -758,9 +769,10 @@
       ${photos ? `<div style="margin-bottom:14px"><div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:.4px;margin-bottom:6px">FOTOĞRAFLAR</div><div style="display:flex;flex-wrap:wrap">${photos}</div></div>` : ""}
 
       <div style="display:flex;justify-content:flex-end;margin-bottom:26px">
-        <div style="background:#f1f5f9;border-radius:10px;padding:12px 22px;text-align:right">
-          <div style="font-size:11px;color:#64748b;letter-spacing:.4px">TOPLAM TUTAR</div>
-          <div style="font-size:24px;font-weight:800;color:#16a34a">${formatMoney(c.amount)}</div>
+        <div style="min-width:250px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:#475569;margin-bottom:6px"><span>Servis Ücreti</span><span>${formatMoney(s.serviceFee)}</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:#475569;margin-bottom:8px;border-bottom:1px solid #e2e8f0;padding-bottom:8px"><span>Tamir Ücreti</span><span>${formatMoney(c.amount)}</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:#64748b;font-weight:700;letter-spacing:.4px">TOPLAM</span><span style="font-size:22px;font-weight:800;color:#16a34a">${formatMoney(serviceTotal(s))}</span></div>
         </div>
       </div>
 

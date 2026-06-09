@@ -47,6 +47,7 @@ create table if not exists public.services (
   problem         text not null,
   status          text not null default 'open'
                     check (status in ('open','assigned','enroute','completed','closed')),
+  service_fee     numeric default 0,   -- servis/çağrı ücreti (açılışta girilir)
   assigned_user_id uuid references public.profiles(id) on delete set null,
   assigned_name   text,
   assigned_phone  text,
