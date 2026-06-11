@@ -4,3 +4,8 @@
 # İşletim sistemi dosyaları
 Thumbs.db
 .DS_Store
+
+# Node / Capacitor
+node_modules/
+www/
+android/

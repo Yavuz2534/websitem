@@ -1,0 +1,30 @@
+{
+  "name": "websitem",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "copy-www": "node copy-www.js",
+    "sync": "node copy-www.js && cap sync android",
+    "open-android": "cap open android"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yavuz2534/websitem.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Yavuz2534/websitem/issues"
+  },
+  "homepage": "https://github.com/Yavuz2534/websitem#readme",
+  "devDependencies": {
+    "@capacitor/cli": "^8.4.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/core": "^8.4.0"
+  }
+}
